@@ -1,156 +1,106 @@
-/**
- * @Date:   2020-04-11T09:33:19+05:30
- * @Last modified time: 2020-05-03T14:09:54+05:30
- */
+//Implement binary search tree in which all keys are unique if duplicate key is there, inform else insert.
+//Traverse the BST in preorder, postorder and inorder.
 
+#include<stdio.h>
+#include<stdlib.h> 
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-struct node{
+typedef struct node* nptr;
+typedef struct node{
 	int data;
-	struct node *right;
-	struct node *left;
-};
+	nptr left;
+	nptr right;
+}node;
 
-//making an new connection
-struct node *newnode(int item)
+nptr createNode(int x){
+	nptr temp = malloc(sizeof(node));
+	temp->left = temp -> right = NULL;
+	temp->data = x;
+	return temp;
+}
+
+nptr insertNode(nptr root, int x)
 {
-	struct node *root = (struct node*)malloc(sizeof(struct node));
-	root->data =item;
-	root->left=NULL;
-	root->right =NULL;
+	if (root == NULL)
+	{
+		printf("Inserted in BST!\n");
+		return createNode(x);
+	}
+	
+	if (root->data == x)
+		printf("Already exists in BST!\n");
+	else if(root->data > x)
+		root->left = insertNode(root->left, x);
+	else if(root->data < x)
+		root->right = insertNode(root->right, x);
+
 	return root;
+} 
+
+void inorder(nptr root)
+{
+	if (root == NULL)
+		return;
+
+	inorder(root->left);
+	printf("%d ", root->data);
+	inorder(root->right);
 }
 
-//making the traversals
-void inorder(struct node *root)
+void preorder(nptr root)
 {
-	if(root!=NULL)
-	{
-		inorder(root->left);
-		printf("%d\n",root->data);
-		inorder(root->right);
-	}
+	if (root == NULL)
+		return;
+
+	printf("%d ", root->data);
+	preorder(root->left);
+	preorder(root->right);
 }
 
-void preorder(struct node *root)
+void postorder(nptr root)
 {
-	if(root!=NULL)
-	{
-		printf("%d\n",root->data);
-		preorder(root->left);
-		preorder(root->right);
-	}
-}
+	if (root == NULL)
+		return;
 
-void postorder(struct node *root)
-{
-	if(root!=NULL)
-	{
-		postorder(root->left);
-		postorder(root->right);
-		printf("%d\n",root->data);
-	}
-}
-
-//searching the binary tree for the element and if no duplicate entry is found then entering the value
-//key is the element to be searched
-bool search(struct node *root,int key)
-{
-	//key present in the root position
-	if(root==NULL||root->data==key)
-	{
-		return true;
-	}
-	//if key is greater than root
-	if(root->data < key)
-	{
-		return search(root->right , key);
-	}
-	//else  key leser than root
-	else if(root->data >  key)
-	{
-	return search(root->left,key);
-	}
-	// if element not found then return false
-	return false;
-
-}
-
-struct node* insert(struct node *node ,int key)
-{
-	//in the main when element not found then we will insert into the tree from the main
-	//if tree is null
-	if (node==NULL)
-		return newnode(key);
-	//else recur down the tree
-	if (key < node->data )
-	{
-		node->left = insert(node->left,key);
-
-	}
-	else if(key > node->data)
-	{
-		node->right =insert(node->right,key);
-	}
-	return node;
+	postorder(root->left);
+	postorder(root->right);
+	printf("%d ", root->data);
 
 }
 
 int main()
 {
-	printf("Enter the number of testcases \n");
-	int t;
-	scanf("%d",&t);
-	while(t-->0){
+	nptr root = NULL;
 
-	printf("Enter the size of the array");
-	int size;
-	scanf("%d",&size);
-	int* arr=(int*)malloc(sizeof(int)*size);
+	int ch = 1;
+	int ele;
+	printf("1. Insert    2. Inorder    3. Preorder    4. Postorder    0. Exit\n");
 
-	printf("Enter now the values of the array :");
-	for(int i=0;i<size;i++)
+	while(ch)
 	{
-		scanf("%d",arr+i);
+		printf("\nCommand: ");
+		scanf("%d", &ch);
+
+		switch(ch)
+		{
+			case 1: printf("Enter element to insert: ");
+					scanf("%d", &ele);
+					root = insertNode(root, ele);
+					break;
+
+		
+			case 2: printf("Inorder: "); 
+					inorder(root);
+					break;
+
+			case 3: printf("Preorder: ");
+					preorder(root);
+					break;
+
+			case 4: printf("Postorder: ");
+					postorder(root);
+					break;
+		}
 	}
-	struct node *root =NULL;
-	root=insert(root,*(arr+0));
-	for(int i=1;i<size;i++)
-	{
-		insert(root,*(arr+i));
-	}
 
-	//printing the inorder ,preorder , postorder
-
-	printf("Inorder sequence :\n");
-	inorder(root);
-	printf("Preorder sequence :\n");
-	preorder(root);
-	printf("Postorder sequence : \n");
-	postorder(root);
-
-	printf("Enter the value to be checked \n");
-	int key ;
-	scanf("%d",&key);
-
-	bool check = search(root,key);
-
-	if(!check)
-	{
-		printf("Element is already present inside the tree.");
-	}
-	else
-	{
-		printf("Adding element to the tree.");
-		struct node* new=insert(root,key);
-		printf("The final tree then becomes,in inoder sense :\n");
-		inorder(new);
-	}
-}
-return 0;
-
+	return 0;
 }
